@@ -37,36 +37,43 @@ public class Account {
     /**
      * Nome do usuário.
      */
+    @Column(nullable = false)
     private String name;
 
     /**
      * E-mail do usuário.
      */
+    @Column(nullable = false)
     private String email;
 
     /**
      * Senha do usuário (armazenada de forma criptografada).
      */
+    @Column(nullable = false)
     private String password;
 
     /**
      * URL ou caminho da foto de perfil.
      */
+    @Column(nullable = false)
     private String photo;
 
     /**
      * CPF do usuário (documento brasileiro).
      */
+    @Column(nullable = false, unique = true)
     private String cpf;
 
     /**
      * Telefone de contato do usuário.
      */
+    @Column(unique = true)
     private String tel;
 
     /**
      * Data de nascimento do usuário.
      */
+    @Column(nullable = false)
     private LocalDate birth;
 
     /**
@@ -117,3 +124,5 @@ public class Account {
         OFF
     }
 }
+
+
