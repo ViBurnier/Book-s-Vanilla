@@ -18,7 +18,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Account {
+public class AccountModel {
 
     /**
      * Identificador único da conta (chave primária).
@@ -42,12 +42,14 @@ public class Account {
 
     /**
      * E-mail do usuário.
+     * E-mail não pode existir no bd.
      */
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
 
     /**
      * Senha do usuário (armazenada de forma criptografada).
+     * Não pode ter menos que 8 caracteres.
      */
     @Column(nullable = false)
     private String password;
@@ -60,18 +62,21 @@ public class Account {
 
     /**
      * CPF do usuário (documento brasileiro).
+     * CPF não pode existir no bd
      */
     @Column(nullable = false, unique = true)
     private String cpf;
 
     /**
      * Telefone de contato do usuário.
+     *
      */
     @Column(unique = true)
     private String tel;
 
     /**
      * Data de nascimento do usuário.
+     * Tem que ser uma data válida.
      */
     @Column(nullable = false)
     private LocalDate birth;

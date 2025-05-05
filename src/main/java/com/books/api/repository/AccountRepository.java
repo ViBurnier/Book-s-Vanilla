@@ -1,6 +1,6 @@
 package com.books.api.repository;
 
-import com.books.api.model.Account;
+import com.books.api.model.AccountModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -12,7 +12,7 @@ import java.util.Optional;
  *
  * Este repositório lida com a entidade Account, permitindo operações como salvar, buscar, atualizar e deletar contas.
  */
-public interface AccountRepository extends JpaRepository<Account, Long> {
+public interface AccountRepository extends JpaRepository<AccountModel, Long> {
 
     /**
      * Busca uma conta pelo e-mail fornecido.
@@ -20,5 +20,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
      * @param email O e-mail da conta a ser localizada.
      * @return Um Optional contendo a conta, se encontrada.
      */
-    Optional<Account> findByEmail(String email);
+    Optional<AccountModel> findByEmail(String email);
 }

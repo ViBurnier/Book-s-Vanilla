@@ -1,6 +1,6 @@
 package com.books.api.controller;
 
-import com.books.api.model.Account;
+import com.books.api.model.AccountModel;
 import com.books.api.repository.AccountRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.*;
@@ -50,7 +50,7 @@ public class AccountController {
             return result;
         }
 
-        Optional<Account> opt = accountRepository.findByEmail(email.trim().toLowerCase());
+        Optional<AccountModel> opt = accountRepository.findByEmail(email.trim().toLowerCase());
         if (opt.isEmpty()) {
             result.put("status", "error");
             result.put("code", "404");
@@ -58,7 +58,7 @@ public class AccountController {
             return result;
         }
 
-        Account account = opt.get();
+        AccountModel account = opt.get();
 
         if (!BCrypt.checkpw(password, account.getPassword())) {
             result.put("status", "error");
