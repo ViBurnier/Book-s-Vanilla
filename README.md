@@ -2,4 +2,10 @@
 Projeto integrador Full Stack Java 2024.2
 
 ##  Anotações:
- Api para spa, usar a IA,  
+ Acordos com o professor:
+ Api para spa (JWT), usar a IA SEMPRE,  
+
+ 
+ 
+ 
+## Links:
