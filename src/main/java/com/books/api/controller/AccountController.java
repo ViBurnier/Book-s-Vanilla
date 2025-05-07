@@ -1,6 +1,6 @@
 package com.books.api.controller;
 
-import com.books.api.model.AccountModel;
+import com.books.api.model.Account;
 import com.books.api.repository.AccountRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.*;
@@ -9,10 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-/**
- * Controlador responsável por lidar com requisições relacionadas à conta de usuário.
- * Atualmente, oferece funcionalidade de login.
- */
 @RestController
 @RequestMapping("/api/account")
 @RequiredArgsConstructor
@@ -21,21 +17,6 @@ public class AccountController {
     // Repositório de acesso aos dados de conta
     private final AccountRepository accountRepository;
 
-    /**
-     * Realiza o login de um usuário com base no e-mail e senha fornecidos.
-     *
-     * @param body     Mapa contendo as chaves "email" e "password" fornecidas no corpo da requisição.
-     * @param response Objeto de resposta HTTP (não utilizado diretamente aqui, mas pode ser usado para customizações futuras).
-     * @return Um mapa contendo o status da operação, código HTTP simulado, mensagem e, em caso de sucesso, um token falso de autenticação.
-     *
-     * <p>Etapas realizadas:</p>
-     * <ul>
-     *   <li>Valida se e-mail e senha foram enviados e não estão vazios.</li>
-     *   <li>Busca o usuário pelo e-mail no banco de dados.</li>
-     *   <li>Verifica se a senha fornecida bate com a senha salva (criptografada).</li>
-     *   <li>Se tudo estiver correto, retorna um token fictício de autenticação.</li>
-     * </ul>
-     */
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, String> body, HttpServletResponse response) {
         Map<String, Object> result = new LinkedHashMap<>();
@@ -50,7 +31,7 @@ public class AccountController {
             return result;
         }
 
-        Optional<AccountModel> opt = accountRepository.findByEmail(email.trim().toLowerCase());
+        Optional<Account> opt = accountRepository.findByEmail(email.trim().toLowerCase());
         if (opt.isEmpty()) {
             result.put("status", "error");
             result.put("code", "404");
@@ -58,7 +39,7 @@ public class AccountController {
             return result;
         }
 
-        AccountModel account = opt.get();
+        Account account = opt.get();
 
         if (!BCrypt.checkpw(password, account.getPassword())) {
             result.put("status", "error");
