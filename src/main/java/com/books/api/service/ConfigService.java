@@ -7,11 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class AppConfigService {
+public class ConfigService {
 
     private final Map<String, String> configMap = new HashMap<>();
 
-    public AppConfigService(ConfigRepository configRepository) {
+    public ConfigService(ConfigRepository configRepository) {
         configRepository.findAll()
                 .forEach(conf -> configMap.put(conf.getVarName(), conf.getVarValue()));
     }
