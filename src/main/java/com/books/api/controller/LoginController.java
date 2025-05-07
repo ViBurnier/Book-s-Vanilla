@@ -2,6 +2,8 @@ package com.books.api.controller;
 
 import com.books.api.model.Account;
 import com.books.api.repository.AccountRepository;
+import com.books.api.service.ConfigService;
+import com.books.api.util.JwtUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.*;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -12,10 +14,11 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/account")
 @RequiredArgsConstructor
-public class AccountController {
+public class LoginController {
 
     // Repositório de acesso aos dados de conta
     private final AccountRepository accountRepository;
+    private final ConfigService config;
 
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody Map<String, String> body, HttpServletResponse response) {
@@ -48,12 +51,25 @@ public class AccountController {
             return result;
         }
 
-        String fakeToken = "jwt-" + account.getId() + "-" + System.currentTimeMillis();
+        if (!account.getStatus().name().equals("ON")) {
+            result.put("status", "error");
+            result.put("code", "403");
+            result.put("message", "Conta desativada ou não autorizada.");
+            return result;
+        }
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", account.getId());
+        claims.put("name", account.getName());
+        claims.put("email", account.getEmail());
+        claims.put("role", account.getRole().name());
+
+        String token = JwtUtil.generateToken(account.getEmail(), claims);
 
         result.put("status", "success");
         result.put("code", "200");
         result.put("message", "Login realizado com sucesso.");
-        result.put("token", fakeToken);
+        result.put("token", token);
         return result;
     }
 }
