@@ -6,7 +6,7 @@ Projeto integrador Full Stack Java 2024.2
 
 
  BACK-END: <br/>
- -- java
+ java
  
  
 ## Links:
