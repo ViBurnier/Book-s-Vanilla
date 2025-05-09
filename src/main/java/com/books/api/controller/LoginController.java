@@ -2,10 +2,11 @@ package com.books.api.controller;
 
 import com.books.api.model.Account;
 import com.books.api.repository.AccountRepository;
-import com.books.api.service.ConfigService;
+import com.books.api.util.ApiResponse;
 import com.books.api.util.JwtUtil;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.*;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,60 +17,51 @@ import java.util.*;
 @RequiredArgsConstructor
 public class LoginController {
 
-    // Repositório de acesso aos dados de conta
     private final AccountRepository accountRepository;
-    private final ConfigService config;
+    private final JwtUtil jwt;
 
     @PostMapping("/login")
-    public Map<String, Object> login(@RequestBody Map<String, String> body, HttpServletResponse response) {
-        Map<String, Object> result = new LinkedHashMap<>();
-
+    public ResponseEntity<?> login(@RequestBody Map<String, String> body) {
         String email = body.get("email");
         String password = body.get("password");
 
         if (email == null || password == null || email.isBlank() || password.isBlank()) {
-            result.put("status", "error");
-            result.put("code", "400");
-            result.put("message", "E-mail e senha são obrigatórios.");
-            return result;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error("400", "E-mail e senha são obrigatórios."));
         }
 
         Optional<Account> opt = accountRepository.findByEmail(email.trim().toLowerCase());
         if (opt.isEmpty()) {
-            result.put("status", "error");
-            result.put("code", "404");
-            result.put("message", "Conta não encontrada.");
-            return result;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("404", "Conta não encontrada."));
         }
 
         Account account = opt.get();
 
         if (!BCrypt.checkpw(password, account.getPassword())) {
-            result.put("status", "error");
-            result.put("code", "401");
-            result.put("message", "Senha incorreta.");
-            return result;
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("401", "Senha incorreta."));
         }
 
         if (!account.getStatus().name().equals("ON")) {
-            result.put("status", "error");
-            result.put("code", "403");
-            result.put("message", "Conta desativada ou não autorizada.");
-            return result;
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error("403", "Conta desativada ou não autorizada."));
         }
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", account.getId());
-        claims.put("name", account.getName());
-        claims.put("email", account.getEmail());
-        claims.put("role", account.getRole().name());
 
-        String token = JwtUtil.generateToken(account.getEmail(), claims);
+        String token = jwt.generateToken(account.getEmail(), claims);
 
-        result.put("status", "success");
-        result.put("code", "200");
-        result.put("message", "Login realizado com sucesso.");
-        result.put("token", token);
-        return result;
+        Map<String, Object> data = new LinkedHashMap<>();
+        data.put("id", account.getId());
+        data.put("name", account.getName());
+        data.put("photo", account.getPhoto());
+        data.put("role", account.getRole().name());
+        data.put("token", token);
+
+        return ResponseEntity.ok(ApiResponse.success("200", "Login realizado com sucesso.", data));
     }
+
+    // Falta criar os cookies
 }
